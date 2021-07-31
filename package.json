@@ -1,0 +1,66 @@
+{
+  "name": "@comandeer/cli-spinner",
+  "version": "0.0.0",
+  "description": "Simple CLI spinner",
+  "main": "dist/cli-spinner.cjs",
+  "module": "dist/cli-spinner.mjs",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "scripts": {
+    "build": "rlb",
+    "test": "mlt",
+    "version": "npm test && npm run build && git add -f dist/",
+    "postversion": "git rm -r --cached dist/ && git commit -m \"chore(dist): clean after release [ci skip]\" && git push origin && git push origin --tags",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Comandeer/rollup-lib-bundler.git"
+  },
+  "keywords": [
+    "cli spinner"
+  ],
+  "author": "Comandeer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Comandeer/cli-spinner/issues"
+  },
+  "homepage": "https://github.com/Comandeer/cli-spinner#readme",
+  "commitplease": {
+    "nohook": true,
+    "style": "angular",
+    "types": [
+      "feat",
+      "fix",
+      "docs",
+      "style",
+      "refactor",
+      "perf",
+      "test",
+      "build",
+      "ci",
+      "chore",
+      "revert"
+    ],
+    "scope": "\\S+.*"
+  },
+  "devDependencies": {
+    "@comandeer/mocha-lib-tester": "^0.5.0",
+    "@comandeer/rollup-lib-bundler": "^0.14.0",
+    "commitplease": "^3.2.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.1"
+  },
+  "dependencies": {
+    "console-control-strings": "^1.1.0"
+  }
+}
