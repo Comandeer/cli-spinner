@@ -48,13 +48,13 @@ class Spinner {
 		const drawSpinner = () => {
 			const frame = this._prepareSpinnerFrame();
 
-			this.stdout.write( frame, 'utf8', () => {
+			this._requestRenderFrame( frame ).then( () => {
 				this[ timeoutSymbol ] = setTimeout( drawSpinner, this.interval );
 			} );
 		};
 
 		this[ shownSymbol ] = true;
-		this.stdout.write( consoleControl.hideCursor(), 'utf8', drawSpinner );
+		this._requestRenderFrame( consoleControl.hideCursor() ).then( drawSpinner );
 	}
 
 	hide() {
@@ -66,7 +66,7 @@ class Spinner {
 			clearTimeout( this[ timeoutSymbol ] );
 		}
 
-		this.stdout.write( eraseLineCmd + consoleControl.showCursor(), 'utf8', () => {
+		this._requestRenderFrame( eraseLineCmd + consoleControl.showCursor() ).then( () => {
 			this[ currentFrameSymbol ] = 0;
 			this[ shownSymbol ] = false;
 		} );
@@ -76,6 +76,16 @@ class Spinner {
 		const currentFrame = this.spinner[ this[ currentFrameSymbol ]++ % this.spinner.length ];
 
 		return `${ eraseLineCmd + currentFrame } ${ this.label }`;
+	}
+
+	_requestRenderFrame( frame ) {
+		return new Promise( ( resolve ) => {
+			if ( this.stdout.write( frame, 'utf8' ) ) {
+				return resolve();
+			}
+
+			this.stdout.once( 'drain', resolve );
+		} );
 	}
 }
 
