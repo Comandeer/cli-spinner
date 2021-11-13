@@ -1,6 +1,6 @@
 {
   "name": "@comandeer/cli-spinner",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple CLI spinner",
   "main": "dist/cli-spinner.cjs",
   "module": "dist/cli-spinner.mjs",
