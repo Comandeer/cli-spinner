@@ -10,7 +10,7 @@ const eraseLineCmd = consoleControl.gotoSOL() + consoleControl.eraseLine();
 
 class Spinner {
 	constructor( {
-		stdout = process.stdout,
+		stdout = process.stderr,
 		label = '',
 		spinner = defaultSpinner,
 		interval = 80
