@@ -11,8 +11,13 @@ describe( 'isInteractive', () => {
 	} );
 
 	afterEach( () => {
-		process.env.CI = originalCI;
-		process.env.TERM = originalTERM;
+		if ( originalCI !== undefined ) {
+			process.env.CI = originalCI;
+		}
+
+		if ( originalTERM !== undefined ) {
+			process.env.TERM = originalTERM;
+		}
 	} );
 
 	it( 'returns true for TTY stream', () => {
