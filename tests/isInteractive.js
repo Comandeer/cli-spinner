@@ -16,42 +16,40 @@ describe( 'isInteractive', () => {
 	} );
 
 	it( 'returns true for TTY stream', () => {
-		const testStream = createDummyStream();
-
-		testStream.isTTY = true;
-
+		const { stream: testStream } = createDummyStream( {
+			isTTY: true
+		} );
 		const result = isInteractive( testStream );
 
 		expect( result ).to.equal( true );
 	} );
 
 	it( 'returns false for non-TTY stream', () => {
-		const testStream = createDummyStream();
-
-		testStream.isTTY = false;
-
+		const { stream: testStream } = createDummyStream( {
+			isTTY: false
+		} );
 		const result = isInteractive( testStream );
 
 		expect( result ).to.equal( false );
 	} );
 
 	it( 'returns false for TTY stream on CI', () => {
-		const testStream = createDummyStream();
-
 		process.env.CI = 'true';
-		testStream.isTTY = true;
 
+		const { stream: testStream } = createDummyStream( {
+			isTTY: true
+		} );
 		const result = isInteractive( testStream );
 
 		expect( result ).to.equal( false );
 	} );
 
 	it( 'returns false for TTY stream when TERM = dumb', () => {
-		const testStream = createDummyStream();
-
 		process.env.TERM = 'dumb';
-		testStream.isTTY = true;
 
+		const { stream: testStream } = createDummyStream( {
+			isTTY: true
+		} );
 		const result = isInteractive( testStream );
 
 		expect( result ).to.equal( false );
