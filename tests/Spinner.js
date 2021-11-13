@@ -6,6 +6,24 @@ import Spinner from '../src/Spinner.js';
 const DEFAULT_INTERVAL = 80;
 
 describe( 'Spinner', () => {
+	const originalCI = process.env.CI;
+	const originalTERM = process.env.TERM;
+
+	beforeEach( () => {
+		delete process.env.CI;
+		delete process.env.TERM;
+	} );
+
+	afterEach( () => {
+		if ( originalCI !== undefined ) {
+			process.env.CI = originalCI;
+		}
+
+		if ( originalTERM !== undefined ) {
+			process.env.TERM = originalTERM;
+		}
+	} );
+
 	it( 'is a function', () => {
 		expect( Spinner ).to.be.a( 'function' );
 	} );
