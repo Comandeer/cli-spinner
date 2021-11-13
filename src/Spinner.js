@@ -2,10 +2,12 @@ import { Writable as WritableStream } from 'stream';
 import { Duplex as DuplexStream } from 'stream';
 import consoleControl from 'console-control-strings';
 import defaultSpinner from './defaultSpinner.js';
+import isInteractive from './isInteractive.js';
 
 const timeoutSymbol = Symbol( 'timeout' );
 const currentFrameSymbol = Symbol( 'currentFrame' );
 const shownSymbol = Symbol( 'showing' );
+const isInteractiveSymbol = Symbol( 'isInteractive' );
 const eraseLineCmd = consoleControl.gotoSOL() + consoleControl.eraseLine();
 
 class Spinner {
@@ -38,10 +40,11 @@ class Spinner {
 		this[ timeoutSymbol ] = null;
 		this[ currentFrameSymbol ] = 0;
 		this[ shownSymbol ] = false;
+		this[ isInteractiveSymbol ] = isInteractive( this.stdout );
 	}
 
 	show() {
-		if ( this[ shownSymbol ] ) {
+		if ( !this[ isInteractiveSymbol ] || this[ shownSymbol ] ) {
 			return;
 		}
 
