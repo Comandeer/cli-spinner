@@ -27,6 +27,13 @@ describe( 'Spinner', () => {
 			} ).not.to.throw( TypeError, 'Custom stdout must be a valid writable/duplex stream' );
 		} );
 
+		// #1
+		it( 'uses stderr as a default value for stdout option', () => {
+			const spinner = new Spinner();
+
+			expect( spinner.stdout ).to.equal( process.stderr );
+		} );
+
 		it( 'accepts number as interval option', () => {
 			expect( () => {
 				new Spinner( {
