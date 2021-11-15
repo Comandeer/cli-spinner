@@ -43,7 +43,7 @@ class Spinner {
 		this[ isInteractiveSymbol ] = isInteractive( this.stdout );
 	}
 
-	show() {
+	async show() {
 		if ( !this[ isInteractiveSymbol ] || this[ shownSymbol ] ) {
 			return;
 		}
@@ -60,7 +60,7 @@ class Spinner {
 		this._requestRenderFrame( consoleControl.hideCursor() ).then( drawSpinner );
 	}
 
-	hide() {
+	async hide() {
 		if ( !this[ shownSymbol ] ) {
 			return;
 		}
