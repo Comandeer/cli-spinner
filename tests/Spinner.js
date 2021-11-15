@@ -2,6 +2,7 @@ import consoleControl from 'console-control-strings';
 import createDummyStream from './helpers/createDummyStream.js';
 import defaultSpinner from '../src/defaultSpinner.js';
 import Spinner from '../src/Spinner.js';
+import regexEscape from './helpers/regexEscape.js';
 
 const DEFAULT_INTERVAL = 80;
 
@@ -108,18 +109,16 @@ describe( 'Spinner', () => {
 			clock.restore();
 		} );
 
-		it( 'displays correct control sequence to hide cursor', () => {
+		it( 'displays correct control sequence to hide cursor', async () => {
 			const { stream: dummyStdout, output } = createDummyStream();
 			const spinner = new Spinner( {
 				stdout: dummyStdout
 			} );
-			const expectedOutput = [
-				consoleControl.hideCursor()
-			];
+			const expectedOutput = consoleControl.hideCursor();
 
-			spinner.show();
+			await spinner.show();
 
-			expect( output ).to.deep.equal( expectedOutput );
+			expect( output[ 0 ] ).to.deep.equal( expectedOutput );
 		} );
 
 		it( 'display correct frame on every tick', async () => {
@@ -128,16 +127,16 @@ describe( 'Spinner', () => {
 				stdout: dummyStdout
 			} );
 			const clockTick = DEFAULT_INTERVAL * 4;
-			// First frame is drawn immediately.
-			const expectedFramesCount = clockTick / DEFAULT_INTERVAL + 1;
+			const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
 			const framesRegexes = [
-				new RegExp( `\\${ defaultSpinner[ 0 ] }\\s*$`, 'gi' ),
-				new RegExp( `\\${ defaultSpinner[ 1 ] }\\s*$`, 'gi' ),
-				new RegExp( `\\${ defaultSpinner[ 2 ] }\\s*$`, 'gi' ),
-				new RegExp( `\\${ defaultSpinner[ 3 ] }\\s*$`, 'gi' )
+				// First frame is written inside the promise.
+				new RegExp( `${ regexEscape( defaultSpinner[ 1 ] ) }\\s*$`, 'gi' ),
+				new RegExp( `${ regexEscape( defaultSpinner[ 2 ] ) }\\s*$`, 'gi' ),
+				new RegExp( `${ regexEscape( defaultSpinner[ 3 ] ) }\\s*$`, 'gi' ),
+				new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
 			];
 
-			spinner.show();
+			await spinner.show();
 
 			output.length = 0;
 
@@ -160,15 +159,15 @@ describe( 'Spinner', () => {
 				spinner: spinnerFrames,
 				stdout: dummyStdout
 			} );
-			const clockTick = DEFAULT_INTERVAL;
-			// First frame is drawn immediately.
-			const expectedFramesCount = clockTick / DEFAULT_INTERVAL + 1;
+			const clockTick = DEFAULT_INTERVAL * 2;
+			const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
 			const framesRegexes = [
-				new RegExp( `\\${ spinnerFrames[ 0 ] }\\s*$`, 'gi' ),
-				new RegExp( `\\${ spinnerFrames[ 1 ] }\\s*$`, 'gi' )
+				// First frame is written inside the promise.
+				new RegExp( `${ regexEscape( spinnerFrames[ 1 ] ) }\\s*$`, 'gi' ),
+				new RegExp( `${ regexEscape( spinnerFrames[ 0 ] ) }\\s*$`, 'gi' )
 			];
 
-			spinner.show();
+			await spinner.show();
 
 			output.length = 0;
 
@@ -189,29 +188,26 @@ describe( 'Spinner', () => {
 				stdout: dummyStdout
 			} );
 			const clockTick = interval * 10;
-			// First frame is drawn immediately.
-			const expectedFramesCount = clockTick / interval + 1;
+			// First frame and hide cursor commands are written inside the promise.
+			const expectedFramesCount = clockTick / interval + 2;
 
-			spinner.show();
-
-			output.length = 0;
-
+			await spinner.show();
 			await clock.tickAsync( clockTick );
 
 			expect( output ).to.have.lengthOf( expectedFramesCount );
 		} );
 
-		it( 'does nothing if spinner is already shown', () => {
+		it( 'does nothing if spinner is already shown', async () => {
 			const { stream: dummyStdout, output } = createDummyStream();
 			const spinner = new Spinner( {
 				stdout: dummyStdout
 			} );
 
-			spinner.show();
+			await spinner.show();
 
 			output.length = 0;
 
-			spinner.show();
+			await spinner.show();
 
 			expect( output ).to.deep.equal( [] );
 		} );
@@ -230,18 +226,18 @@ describe( 'Spinner', () => {
 			clock.restore();
 		} );
 
-		it( 'does nothing if spinner is not already shown', () => {
+		it( 'does nothing if spinner is not already shown', async () => {
 			const { stream: dummyStdout, output } = createDummyStream();
 			const spinner = new Spinner( {
 				stdout: dummyStdout
 			} );
 
-			spinner.hide();
+			await spinner.hide();
 
 			expect( output ).to.deep.equal( [] );
 		} );
 
-		it( 'erases line and shows cursor', () => {
+		it( 'erases line and shows cursor', async () => {
 			const { stream: dummyStdout, output } = createDummyStream();
 			const spinner = new Spinner( {
 				stdout: dummyStdout
@@ -250,11 +246,11 @@ describe( 'Spinner', () => {
 				consoleControl.gotoSOL() + consoleControl.eraseLine() + consoleControl.showCursor()
 			];
 
-			spinner.show();
+			await spinner.show();
 
 			output.length = 0;
 
-			spinner.hide();
+			await spinner.hide();
 
 			expect( output ).to.deep.equal( expectedOutput );
 		} );
@@ -264,12 +260,14 @@ describe( 'Spinner', () => {
 			const spinner = new Spinner( {
 				stdout: dummyStdout
 			} );
-			const expectedOutput = [
-				consoleControl.hideCursor()
+			const framesRegexes = [
+				// The first char in this command seems to be problematic…
+				new RegExp( regexEscape( consoleControl.hideCursor()[ 1 ] ), 'gi' ),
+				new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
 			];
 
-			spinner.show();
-			spinner.hide();
+			await spinner.show();
+			await spinner.hide();
 
 			await new Promise( ( resolve ) => {
 				process.nextTick( resolve );
@@ -277,9 +275,11 @@ describe( 'Spinner', () => {
 
 			output.length = 0;
 
-			spinner.show();
+			await spinner.show();
 
-			expect( output ).to.deep.equal( expectedOutput );
+			framesRegexes.forEach( ( regex, i ) => {
+				expect( output[ i ] ).to.match( regex );
+			} );
 		} );
 	} );
 } );
