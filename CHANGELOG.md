@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## [0.3.0]
+### Changed
+* [#6]: **BREAKING CHANGE**: make the API fully asynchronous.
+
 ## [0.2.0] – 2021-11-13
 ### Changed
 * [#1]: **BREAKING CHANGE**: use `stderr` instead of `stdout`.
@@ -17,5 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [#1]: https://github.com/Comandeer/cli-spinner/issues/1
 [#3]: https://github.com/Comandeer/cli-spinner/issues/3
+[#6]: https://github.com/Comandeer/cli-spinner/issues/6
 
-[0.6.0]: https://github.com/Comandeer/cli-spinner/compare/v0.1.0...v0.2.0
+[0.3.0]: https://github.com/Comandeer/cli-spinner/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/Comandeer/cli-spinner/compare/v0.1.0...v0.2.0
