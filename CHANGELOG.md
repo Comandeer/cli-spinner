@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## [0.3.1] – 2021-11-19
+### Fixed
+* [#9]: incorect repo URL in `package.json`.
+
 ## [0.3.0] – 2021-11-16
 ### Added
 * [#5]: some docs.
@@ -25,6 +29,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#3]: https://github.com/Comandeer/cli-spinner/issues/3
 [#5]: https://github.com/Comandeer/cli-spinner/issues/5
 [#6]: https://github.com/Comandeer/cli-spinner/issues/6
+[#9]: https://github.com/Comandeer/cli-spinner/issues/9
 
+[0.3.1]: https://github.com/Comandeer/cli-spinner/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Comandeer/cli-spinner/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Comandeer/cli-spinner/compare/v0.1.0...v0.2.0
