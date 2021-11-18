@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Comandeer/rollup-lib-bundler.git"
+    "url": "git+https://github.com/Comandeer/cli-spinner.git"
   },
   "keywords": [
     "cli spinner"
