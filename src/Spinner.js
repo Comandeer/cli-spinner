@@ -48,16 +48,19 @@ class Spinner {
 			return;
 		}
 
-		const drawSpinner = () => {
+		const drawSpinner = async () => {
 			const frame = this._prepareSpinnerFrame();
 
-			this._requestRenderFrame( frame ).then( () => {
-				this[ timeoutSymbol ] = setTimeout( drawSpinner, this.interval );
-			} );
+			await this._requestRenderFrame( frame );
+
+			this[ timeoutSymbol ] = setTimeout( drawSpinner, this.interval );
 		};
 
 		this[ shownSymbol ] = true;
-		this._requestRenderFrame( consoleControl.hideCursor() ).then( drawSpinner );
+
+		await this._requestRenderFrame( consoleControl.hideCursor() );
+
+		return drawSpinner();
 	}
 
 	async hide() {
@@ -69,10 +72,10 @@ class Spinner {
 			clearTimeout( this[ timeoutSymbol ] );
 		}
 
-		this._requestRenderFrame( eraseLineCmd + consoleControl.showCursor() ).then( () => {
-			this[ currentFrameSymbol ] = 0;
-			this[ shownSymbol ] = false;
-		} );
+		await this._requestRenderFrame( eraseLineCmd + consoleControl.showCursor() );
+
+		this[ currentFrameSymbol ] = 0;
+		this[ shownSymbol ] = false;
 	}
 
 	_prepareSpinnerFrame() {
