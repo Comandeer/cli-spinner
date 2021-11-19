@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#9]: https://github.com/Comandeer/cli-spinner/issues/9
 [#12]: https://github.com/Comandeer/cli-spinner/issues/12
 
-[0.3.1]: https://github.com/Comandeer/cli-spinner/compare/v0.3.1...v0.3.2
+[0.3.2]: https://github.com/Comandeer/cli-spinner/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Comandeer/cli-spinner/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Comandeer/cli-spinner/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Comandeer/cli-spinner/compare/v0.1.0...v0.2.0
