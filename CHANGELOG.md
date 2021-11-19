@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## [0.3.2] – 2021-11-20
+### Fixed
+* [#12]: make the API _truly_ asynchronous.
+
 ## [0.3.1] – 2021-11-19
 ### Fixed
 * [#9]: incorect repo URL in `package.json`.
@@ -30,7 +34,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#5]: https://github.com/Comandeer/cli-spinner/issues/5
 [#6]: https://github.com/Comandeer/cli-spinner/issues/6
 [#9]: https://github.com/Comandeer/cli-spinner/issues/9
+[#12]: https://github.com/Comandeer/cli-spinner/issues/12
 
+[0.3.1]: https://github.com/Comandeer/cli-spinner/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Comandeer/cli-spinner/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Comandeer/cli-spinner/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Comandeer/cli-spinner/compare/v0.1.0...v0.2.0
