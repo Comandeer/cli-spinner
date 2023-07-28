@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## [1.0.0]
+## [1.0.0] – 2023-07-28
 ### Added
+* [#14]: `.d.ts` file for the package.
 * [#15]: support for Node.js 18 and 20.
 
 ### Changed
@@ -57,6 +58,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#6]: https://github.com/Comandeer/cli-spinner/issues/6
 [#9]: https://github.com/Comandeer/cli-spinner/issues/9
 [#12]: https://github.com/Comandeer/cli-spinner/issues/12
+[#14]: https://github.com/Comandeer/cli-spinner/issues/14
 [#15]: https://github.com/Comandeer/cli-spinner/issues/15
 [#17]: https://github.com/Comandeer/cli-spinner/issues/17
 [#18]: https://github.com/Comandeer/cli-spinner/issues/18

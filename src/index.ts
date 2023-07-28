@@ -1,22 +1,36 @@
+import { stderr } from 'node:process';
 import { Duplex as DuplexStream, Writable as WritableStream } from 'node:stream';
 import ansiEscapes from 'ansi-escapes';
 import defaultSpinner from './defaultSpinner.js';
 import isInteractive from 'is-interactive';
 
+interface SpinnerOptions {
+	stdout?: DuplexStream | WritableStream;
+	label?: string;
+	spinner?: Array<string>;
+	interval?: number;
+}
+
 const eraseLineCmd = ansiEscapes.cursorLeft + ansiEscapes.eraseLine;
 
 export default class Spinner {
-	#timeout;
-	#currentFrame;
-	#isShown;
-	#isInteractive;
+	stdout: DuplexStream | WritableStream;
+	label: string;
+	spinner: Array<string>;
+	interval: number;
+
+	// eslint-disable-next-line no-undef
+	#timeout: NodeJS.Timeout | null;
+	#currentFrame: number;
+	#isShown: boolean;
+	#isInteractive: boolean;
 
 	constructor( {
-		stdout = process.stderr,
+		stdout = stderr,
 		label = '',
 		spinner = defaultSpinner,
 		interval = 80
-	} = {} ) {
+	}: SpinnerOptions = {} ) {
 		if ( !isValidStream( stdout ) ) {
 			throw new TypeError( 'Custom stdout must be a valid writable/duplex stream' );
 		}
@@ -45,16 +59,17 @@ export default class Spinner {
 		} );
 	}
 
-	async show() {
+	async show(): Promise<void> {
 		if ( !this.#isInteractive || this.#isShown ) {
 			return;
 		}
 
-		const drawSpinner = async () => {
+		const drawSpinner = async (): Promise<void> => {
 			const frame = this.#prepareSpinnerFrame();
 
 			await this.#requestRenderFrame( frame );
 
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			this.#timeout = setTimeout( drawSpinner, this.interval );
 		};
 
@@ -65,7 +80,7 @@ export default class Spinner {
 		return drawSpinner();
 	}
 
-	async hide() {
+	async hide(): Promise<void> {
 		if ( !this.#isShown ) {
 			return;
 		}
@@ -80,16 +95,18 @@ export default class Spinner {
 		this.#isShown = false;
 	}
 
-	#prepareSpinnerFrame() {
-		const currentFrame = this.spinner[ this.#currentFrame++ % this.spinner.length ];
+	#prepareSpinnerFrame(): string {
+		const currentFrame = this.spinner[ this.#currentFrame++ % this.spinner.length ]!;
 
 		return `${ eraseLineCmd + currentFrame } ${ this.label }`;
 	}
 
-	#requestRenderFrame( frame ) {
+	#requestRenderFrame( frame: string ): Promise<void> {
 		return new Promise( ( resolve ) => {
 			if ( this.stdout.write( frame, 'utf8' ) ) {
-				return resolve();
+				resolve();
+
+				return;
 			}
 
 			this.stdout.once( 'drain', resolve );
@@ -97,11 +114,11 @@ export default class Spinner {
 	}
 }
 
-function isValidStream( value ) {
+function isValidStream( value: unknown ): value is DuplexStream | WritableStream {
 	return value instanceof WritableStream || value instanceof DuplexStream;
 }
 
-function isArrayOfStrings( value ) {
+function isArrayOfStrings( value: unknown ): value is Array<string> {
 	return Array.isArray( value ) && value.every( ( element ) => {
 		return typeof element === 'string';
 	} );
