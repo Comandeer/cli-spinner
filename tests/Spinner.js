@@ -1,8 +1,8 @@
 import consoleControl from 'console-control-strings';
-import createDummyStream from './helpers/createDummyStream.js';
+import createDummyStream from './__helpers__/createDummyStream.js';
 import defaultSpinner from '../src/defaultSpinner.js';
 import Spinner from '../src/Spinner.js';
-import regexEscape from './helpers/regexEscape.js';
+import regexEscape from './__helpers__/regexEscape.js';
 
 const DEFAULT_INTERVAL = 80;
 

@@ -1,4 +1,4 @@
-import createDummyStream from './helpers/createDummyStream.js';
+import createDummyStream from './__helpers__/createDummyStream.js';
 import isInteractive from '../src/isInteractive.js';
 
 describe( 'isInteractive', () => {
