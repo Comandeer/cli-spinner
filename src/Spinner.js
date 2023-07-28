@@ -1,5 +1,4 @@
-import { Writable as WritableStream } from 'stream';
-import { Duplex as DuplexStream } from 'stream';
+import { Duplex as DuplexStream, Writable as WritableStream } from 'node:stream';
 import consoleControl from 'console-control-strings';
 import defaultSpinner from './defaultSpinner.js';
 import isInteractive from './isInteractive.js';
@@ -10,7 +9,7 @@ const shownSymbol = Symbol( 'showing' );
 const isInteractiveSymbol = Symbol( 'isInteractive' );
 const eraseLineCmd = consoleControl.gotoSOL() + consoleControl.eraseLine();
 
-class Spinner {
+export default class Spinner {
 	constructor( {
 		stdout = process.stderr,
 		label = '',
@@ -104,5 +103,3 @@ function isArrayOfStrings( value ) {
 		return typeof element === 'string';
 	} );
 }
-
-export default Spinner;

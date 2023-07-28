@@ -1,7 +1,6 @@
-import { Duplex as DuplexStream } from 'stream';
-import { Writable as WritableStream } from 'stream';
+import { Duplex as DuplexStream, Writable as WritableStream } from 'node:stream';
 
-function createDummyStream( {
+export default function createDummyStream( {
 	type = 'writable',
 	isTTY = true
 } = {} ) {
@@ -24,5 +23,3 @@ function createDummyStream( {
 		output
 	};
 }
-
-export default createDummyStream;

@@ -1,8 +1,6 @@
-const defaultSpinner = [
+export default [
 	'/',
 	'-',
 	'\\',
 	'|'
 ];
-
-export default defaultSpinner;

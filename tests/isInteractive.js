@@ -1,5 +1,5 @@
-import createDummyStream from './helpers/createDummyStream';
-import isInteractive from '../src/isInteractive';
+import createDummyStream from './helpers/createDummyStream.js';
+import isInteractive from '../src/isInteractive.js';
 
 describe( 'isInteractive', () => {
 	const originalCI = process.env.CI;
