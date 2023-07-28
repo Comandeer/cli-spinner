@@ -54,11 +54,11 @@
     "scope": "\\S+.*"
   },
   "devDependencies": {
-    "@comandeer/mocha-lib-tester": "^0.6.0",
-    "@comandeer/rollup-lib-bundler": "^0.14.0",
+    "@comandeer/mocha-lib-tester": "^0.7.0",
+    "@comandeer/rollup-lib-bundler": "^0.22.0",
     "commitplease": "^3.2.0",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^7.0.4"
+    "husky": "^8.0.3"
   },
   "dependencies": {
     "console-control-strings": "^1.1.0"
