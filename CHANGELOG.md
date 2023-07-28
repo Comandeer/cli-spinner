@@ -6,9 +6,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## [0.4.0]
+## [1.0.0]
 ### Added
 * [#15]: support for Node.js 18 and 20.
+
+### Changed
+* [#18]: **BREAKING CHANGE**: made the package an ESM only one.
+* [#17]: **BREAKING CHANGE**: updated depdendencies:
+
+	| Dependency                  | Old version | New version |
+	| --------------------------- | ----------- | ----------- |
+	| ⭐ `ansi-escapes`            | N/A         | `^6.2.0`    |
+	| ☠️ `console-control-strings` | `^1.1.0`    | N/A         |
+	| ⭐ `is-interactive`          | N/A         | `^2.0.0`    |
+
+	New dependencies are marked with the "⭐" emoji.
+
+	Removed dependencies are marked with the "☠️" emoji.
 
 ### Removed
 * [#15]: **BREAKING CHANGE**: support for Node.js 12 and 14.
@@ -43,8 +57,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#9]: https://github.com/Comandeer/cli-spinner/issues/9
 [#12]: https://github.com/Comandeer/cli-spinner/issues/12
 [#15]: https://github.com/Comandeer/cli-spinner/issues/15
+[#17]: https://github.com/Comandeer/cli-spinner/issues/17
+[#18]: https://github.com/Comandeer/cli-spinner/issues/18
 
-[0.4.0]: https://github.com/Comandeer/cli-spinner/compare/v0.3.2...v0.4.0
+[1.0.0]: https://github.com/Comandeer/cli-spinner/compare/v0.3.2...v1.0.0
 [0.3.2]: https://github.com/Comandeer/cli-spinner/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Comandeer/cli-spinner/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Comandeer/cli-spinner/compare/v0.2.0...v0.3.0

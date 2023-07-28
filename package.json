@@ -2,8 +2,12 @@
   "name": "@comandeer/cli-spinner",
   "version": "0.3.2",
   "description": "Simple CLI spinner",
-  "main": "dist/cli-spinner.cjs",
-  "module": "dist/cli-spinner.mjs",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/cli-spinner.mjs"
+    }
+  },
   "engines": {
     "node": ">=16.0.0"
   },
@@ -17,7 +21,8 @@
   },
   "scripts": {
     "build": "rlb",
-    "test": "mlt",
+    "lint": "eslint \"./src\" \"./tests\"",
+    "test": "c8 ava",
     "version": "npm test && npm run build && git add -f dist/",
     "postversion": "git rm -r --cached dist/ && git commit -m \"chore(dist): clean after release [ci skip]\" && git push origin && git push origin --tags",
     "prepare": "husky install"
@@ -54,13 +59,19 @@
     "scope": "\\S+.*"
   },
   "devDependencies": {
-    "@comandeer/mocha-lib-tester": "^0.6.0",
-    "@comandeer/rollup-lib-bundler": "^0.14.0",
+    "@comandeer/eslint-config": "^0.11.1",
+    "@comandeer/rollup-lib-bundler": "^0.22.0",
+    "@types/sinon": "^10.0.15",
+    "ava": "^5.3.1",
+    "c8": "^8.0.1",
     "commitplease": "^3.2.0",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^7.0.4"
+    "eslint": "^8.45.0",
+    "husky": "^8.0.3",
+    "sinon": "^15.2.0"
   },
   "dependencies": {
-    "console-control-strings": "^1.1.0"
+    "ansi-escapes": "^6.2.0",
+    "is-interactive": "^2.0.0"
   }
 }
