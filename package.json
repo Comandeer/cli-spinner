@@ -68,7 +68,10 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.45.0",
     "husky": "^8.0.3",
-    "sinon": "^15.2.0"
+    "sinon": "^15.2.0",
+    "tslib": "^2.6.1",
+    "tsx": "^3.12.7",
+    "typescript": "^5.1.6"
   },
   "dependencies": {
     "ansi-escapes": "^6.2.0",
