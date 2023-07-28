@@ -101,7 +101,7 @@ export default class Spinner {
 		return `${ eraseLineCmd + currentFrame } ${ this.label }`;
 	}
 
-	#requestRenderFrame( frame ): Promise<void> {
+	#requestRenderFrame( frame: string ): Promise<void> {
 		return new Promise( ( resolve ) => {
 			if ( this.stdout.write( frame, 'utf8' ) ) {
 				resolve();
