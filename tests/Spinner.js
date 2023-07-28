@@ -1,5 +1,5 @@
 import { stderr } from 'node:process';
-import consoleControl from 'console-control-strings';
+import ansiEscapes from 'ansi-escapes';
 import test from 'ava';
 import { useFakeTimers } from 'sinon';
 import createDummyStream from './__helpers__/createDummyStream.js';
@@ -127,7 +127,7 @@ test.serial( '#show() displays correct control sequence to hide cursor', async (
 	const spinner = new Spinner( {
 		stdout: dummyStdout
 	} );
-	const expectedOutput = consoleControl.hideCursor();
+	const expectedOutput = ansiEscapes.cursorHide;
 
 	await spinner.show();
 
@@ -242,7 +242,7 @@ test.serial( '#hide() erases line and shows cursor', async ( t ) => {
 		stdout: dummyStdout
 	} );
 	const expectedOutput = [
-		consoleControl.gotoSOL() + consoleControl.eraseLine() + consoleControl.showCursor()
+		ansiEscapes.cursorLeft + ansiEscapes.eraseLine + ansiEscapes.cursorShow
 	];
 
 	await spinner.show();
@@ -261,7 +261,7 @@ test.serial( '#hide() is possible to reshow the spinner after hiding it', async 
 	} );
 	const framesRegexes = [
 		// The first char in this command seems to be problematic…
-		new RegExp( regexEscape( consoleControl.hideCursor()[ 1 ] ), 'gi' ),
+		new RegExp( regexEscape( ansiEscapes.cursorHide[ 1 ] ), 'gi' ),
 		new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
 	];
 

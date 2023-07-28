@@ -1,5 +1,5 @@
 import { Duplex as DuplexStream, Writable as WritableStream } from 'node:stream';
-import consoleControl from 'console-control-strings';
+import ansiEscapes from 'ansi-escapes';
 import defaultSpinner from './defaultSpinner.js';
 import isInteractive from 'is-interactive';
 
@@ -7,7 +7,7 @@ const timeoutSymbol = Symbol( 'timeout' );
 const currentFrameSymbol = Symbol( 'currentFrame' );
 const shownSymbol = Symbol( 'showing' );
 const isInteractiveSymbol = Symbol( 'isInteractive' );
-const eraseLineCmd = consoleControl.gotoSOL() + consoleControl.eraseLine();
+const eraseLineCmd = ansiEscapes.cursorLeft + ansiEscapes.eraseLine;
 
 export default class Spinner {
 	constructor( {
@@ -59,7 +59,7 @@ export default class Spinner {
 
 		this[ shownSymbol ] = true;
 
-		await this._requestRenderFrame( consoleControl.hideCursor() );
+		await this._requestRenderFrame( ansiEscapes.cursorHide );
 
 		return drawSpinner();
 	}
@@ -73,7 +73,7 @@ export default class Spinner {
 			clearTimeout( this[ timeoutSymbol ] );
 		}
 
-		await this._requestRenderFrame( eraseLineCmd + consoleControl.showCursor() );
+		await this._requestRenderFrame( eraseLineCmd + ansiEscapes.cursorShow );
 
 		this[ currentFrameSymbol ] = 0;
 		this[ shownSymbol ] = false;
