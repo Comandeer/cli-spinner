@@ -1,7 +1,7 @@
 import { stderr } from 'node:process';
 import ansiEscapes from 'ansi-escapes';
 import test from 'ava';
-import { useFakeTimers } from 'sinon';
+import { SinonFakeTimers, useFakeTimers } from 'sinon';
 import createDummyStream from './__helpers__/createDummyStream.js';
 import regexEscape from './__helpers__/regexEscape.js';
 import defaultSpinner from '../src/defaultSpinner.js';
@@ -11,7 +11,7 @@ const DEFAULT_INTERVAL = 80;
 
 const originalCI = process.env.CI;
 const originalTERM = process.env.TERM;
-let clock;
+let clock: SinonFakeTimers;
 
 test.beforeEach( () => {
 	delete process.env.CI;
@@ -47,6 +47,7 @@ test.serial( '#constructor() accepts stream as stdout option', ( t ) => {
 
 	t.throws( () => {
 		new Spinner( {
+			// @ts-expect-error
 			stdout: 'stream'
 		} );
 	}, expectedError );
@@ -73,6 +74,7 @@ test.serial( '#constructor() accepts number as interval option', ( t ) => {
 
 	t.throws( () => {
 		new Spinner( {
+			// @ts-expect-error
 			interval: false
 		} );
 	}, expectedError );
@@ -92,6 +94,7 @@ test.serial( '#constructor() accepts string as label option', ( t ) => {
 
 	t.throws( () => {
 		new Spinner( {
+			// @ts-expect-error
 			label: {}
 		} );
 	}, expectedError );
@@ -111,6 +114,7 @@ test.serial( '#constructor() accepts array of strings as spinner option', ( t ) 
 
 	t.throws( () => {
 		new Spinner( {
+			// @ts-expect-error
 			spinner: [ 1, true, 'a' ]
 		} );
 	}, expectedError );
@@ -134,7 +138,7 @@ test.serial( '#show() displays correct control sequence to hide cursor', async (
 	t.deepEqual( output[ 0 ], expectedOutput );
 } );
 
-test.serial( '#show() displays correct frame on every tick', async ( t ) => {
+test( '#show() displays correct frame on every tick', async ( t ) => {
 	const { stream: dummyStdout, output } = createDummyStream();
 	const spinner = new Spinner( {
 		stdout: dummyStdout
@@ -143,10 +147,10 @@ test.serial( '#show() displays correct frame on every tick', async ( t ) => {
 	const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
 	const framesRegexes = [
 		// First frame is written inside the promise.
-		new RegExp( `${ regexEscape( defaultSpinner[ 1 ] ) }\\s*$`, 'gi' ),
-		new RegExp( `${ regexEscape( defaultSpinner[ 2 ] ) }\\s*$`, 'gi' ),
-		new RegExp( `${ regexEscape( defaultSpinner[ 3 ] ) }\\s*$`, 'gi' ),
-		new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
+		new RegExp( `${ regexEscape( defaultSpinner[ 1 ]! ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 2 ]! ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 3 ]! ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 0 ]! ) }\\s*$`, 'gi' )
 	];
 
 	await spinner.show();
@@ -158,7 +162,7 @@ test.serial( '#show() displays correct frame on every tick', async ( t ) => {
 	t.is( output.length, expectedFramesCount );
 
 	framesRegexes.forEach( ( regex, i ) => {
-		t.regex( output[ i ], regex );
+		t.regex( output[ i ]!, regex );
 	} );
 } );
 
@@ -176,8 +180,8 @@ test.serial( '#show() displays custom spinner', async ( t ) => {
 	const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
 	const framesRegexes = [
 		// First frame is written inside the promise.
-		new RegExp( `${ regexEscape( spinnerFrames[ 1 ] ) }\\s*$`, 'gi' ),
-		new RegExp( `${ regexEscape( spinnerFrames[ 0 ] ) }\\s*$`, 'gi' )
+		new RegExp( `${ regexEscape( spinnerFrames[ 1 ]! ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( spinnerFrames[ 0 ]! ) }\\s*$`, 'gi' )
 	];
 
 	await spinner.show();
@@ -189,7 +193,7 @@ test.serial( '#show() displays custom spinner', async ( t ) => {
 	t.is( output.length, expectedFramesCount );
 
 	framesRegexes.forEach( ( regex, i ) => {
-		t.regex( output[ i ], regex );
+		t.regex( output[ i ]!, regex );
 	} );
 } );
 
@@ -261,8 +265,8 @@ test.serial( '#hide() is possible to reshow the spinner after hiding it', async 
 	} );
 	const framesRegexes = [
 		// The first char in this command seems to be problematic…
-		new RegExp( regexEscape( ansiEscapes.cursorHide[ 1 ] ), 'gi' ),
-		new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
+		new RegExp( regexEscape( ansiEscapes.cursorHide[ 1 ]! ), 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 0 ]! ) }\\s*$`, 'gi' )
 	];
 
 	await spinner.show();
@@ -277,6 +281,6 @@ test.serial( '#hide() is possible to reshow the spinner after hiding it', async 
 	await spinner.show();
 
 	framesRegexes.forEach( ( regex, i ) => {
-		t.regex( output[ i ], regex );
+		t.regex( output[ i ]!, regex );
 	} );
 } );
