@@ -71,7 +71,7 @@
     "sinon": "^15.2.0"
   },
   "dependencies": {
-    "console-control-strings": "^1.1.0",
+    "ansi-escapes": "^6.2.0",
     "is-interactive": "^2.0.0"
   }
 }
