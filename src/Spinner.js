@@ -1,7 +1,7 @@
 import { Duplex as DuplexStream, Writable as WritableStream } from 'node:stream';
 import consoleControl from 'console-control-strings';
 import defaultSpinner from './defaultSpinner.js';
-import isInteractive from './isInteractive.js';
+import isInteractive from 'is-interactive';
 
 const timeoutSymbol = Symbol( 'timeout' );
 const currentFrameSymbol = Symbol( 'currentFrame' );
@@ -39,7 +39,9 @@ export default class Spinner {
 		this[ timeoutSymbol ] = null;
 		this[ currentFrameSymbol ] = 0;
 		this[ shownSymbol ] = false;
-		this[ isInteractiveSymbol ] = isInteractive( this.stdout );
+		this[ isInteractiveSymbol ] = isInteractive( {
+			stream: this.stdout
+		} );
 	}
 
 	async show() {
