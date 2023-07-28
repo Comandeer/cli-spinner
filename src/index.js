@@ -3,13 +3,14 @@ import ansiEscapes from 'ansi-escapes';
 import defaultSpinner from './defaultSpinner.js';
 import isInteractive from 'is-interactive';
 
-const timeoutSymbol = Symbol( 'timeout' );
-const currentFrameSymbol = Symbol( 'currentFrame' );
-const shownSymbol = Symbol( 'showing' );
-const isInteractiveSymbol = Symbol( 'isInteractive' );
 const eraseLineCmd = ansiEscapes.cursorLeft + ansiEscapes.eraseLine;
 
 export default class Spinner {
+	#timeout;
+	#currentFrame;
+	#isShown;
+	#isInteractive;
+
 	constructor( {
 		stdout = process.stderr,
 		label = '',
@@ -36,56 +37,56 @@ export default class Spinner {
 		this.label = label;
 		this.spinner = spinner;
 		this.interval = interval;
-		this[ timeoutSymbol ] = null;
-		this[ currentFrameSymbol ] = 0;
-		this[ shownSymbol ] = false;
-		this[ isInteractiveSymbol ] = isInteractive( {
+		this.#timeout = null;
+		this.#currentFrame = 0;
+		this.#isShown = false;
+		this.#isInteractive = isInteractive( {
 			stream: this.stdout
 		} );
 	}
 
 	async show() {
-		if ( !this[ isInteractiveSymbol ] || this[ shownSymbol ] ) {
+		if ( !this.#isInteractive || this.#isShown ) {
 			return;
 		}
 
 		const drawSpinner = async () => {
-			const frame = this._prepareSpinnerFrame();
+			const frame = this.#prepareSpinnerFrame();
 
-			await this._requestRenderFrame( frame );
+			await this.#requestRenderFrame( frame );
 
-			this[ timeoutSymbol ] = setTimeout( drawSpinner, this.interval );
+			this.#timeout = setTimeout( drawSpinner, this.interval );
 		};
 
-		this[ shownSymbol ] = true;
+		this.#isShown = true;
 
-		await this._requestRenderFrame( ansiEscapes.cursorHide );
+		await this.#requestRenderFrame( ansiEscapes.cursorHide );
 
 		return drawSpinner();
 	}
 
 	async hide() {
-		if ( !this[ shownSymbol ] ) {
+		if ( !this.#isShown ) {
 			return;
 		}
 
-		if ( this[ timeoutSymbol ] ) {
-			clearTimeout( this[ timeoutSymbol ] );
+		if ( this.#timeout ) {
+			clearTimeout( this.#timeout );
 		}
 
-		await this._requestRenderFrame( eraseLineCmd + ansiEscapes.cursorShow );
+		await this.#requestRenderFrame( eraseLineCmd + ansiEscapes.cursorShow );
 
-		this[ currentFrameSymbol ] = 0;
-		this[ shownSymbol ] = false;
+		this.#currentFrame = 0;
+		this.#isShown = false;
 	}
 
-	_prepareSpinnerFrame() {
-		const currentFrame = this.spinner[ this[ currentFrameSymbol ]++ % this.spinner.length ];
+	#prepareSpinnerFrame() {
+		const currentFrame = this.spinner[ this.#currentFrame++ % this.spinner.length ];
 
 		return `${ eraseLineCmd + currentFrame } ${ this.label }`;
 	}
 
-	_requestRenderFrame( frame ) {
+	#requestRenderFrame( frame ) {
 		return new Promise( ( resolve ) => {
 			if ( this.stdout.write( frame, 'utf8' ) ) {
 				return resolve();
