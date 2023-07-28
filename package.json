@@ -5,8 +5,8 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/cli-spinner.mjs",
-      "types": "./dist/cli-spinner.d.ts"
+      "types": "./dist/cli-spinner.d.ts",
+      "import": "./dist/cli-spinner.mjs"
     }
   },
   "engines": {
