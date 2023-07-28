@@ -5,7 +5,7 @@
   "main": "dist/cli-spinner.cjs",
   "module": "dist/cli-spinner.mjs",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "dist"

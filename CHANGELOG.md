@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## [0.4.0]
+### Added
+* [#15]: support for Node.js 18 and 20.
+
+### Removed
+* [#15]: **BREAKING CHANGE**: support for Node.js 12 and 14.
+
 ## [0.3.2] – 2021-11-20
 ### Fixed
 * [#12]: make the API _truly_ asynchronous.
@@ -35,7 +42,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#6]: https://github.com/Comandeer/cli-spinner/issues/6
 [#9]: https://github.com/Comandeer/cli-spinner/issues/9
 [#12]: https://github.com/Comandeer/cli-spinner/issues/12
+[#15]: https://github.com/Comandeer/cli-spinner/issues/15
 
+[0.4.0]: https://github.com/Comandeer/cli-spinner/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/Comandeer/cli-spinner/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Comandeer/cli-spinner/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Comandeer/cli-spinner/compare/v0.2.0...v0.3.0
