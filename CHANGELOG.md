@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 * [#18]: **BREAKING CHANGE**: made the package an ESM only one.
+* [#20]: **BREAKING CHANGE**: move from symbol and `_`-private methods to real private fields and methods.
 * [#17]: **BREAKING CHANGE**: updated depdendencies:
 
 	| Dependency                  | Old version | New version |
@@ -59,6 +60,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#15]: https://github.com/Comandeer/cli-spinner/issues/15
 [#17]: https://github.com/Comandeer/cli-spinner/issues/17
 [#18]: https://github.com/Comandeer/cli-spinner/issues/18
+[#20]: https://github.com/Comandeer/cli-spinner/issues/20
 
 [1.0.0]: https://github.com/Comandeer/cli-spinner/compare/v0.3.2...v1.0.0
 [0.3.2]: https://github.com/Comandeer/cli-spinner/compare/v0.3.1...v0.3.2
