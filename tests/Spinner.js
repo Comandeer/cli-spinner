@@ -1,285 +1,282 @@
+import { stderr } from 'node:process';
 import consoleControl from 'console-control-strings';
+import test from 'ava';
+import { useFakeTimers } from 'sinon';
 import createDummyStream from './__helpers__/createDummyStream.js';
+import regexEscape from './__helpers__/regexEscape.js';
 import defaultSpinner from '../src/defaultSpinner.js';
 import Spinner from '../src/Spinner.js';
-import regexEscape from './__helpers__/regexEscape.js';
 
 const DEFAULT_INTERVAL = 80;
 
-describe( 'Spinner', () => {
-	const originalCI = process.env.CI;
-	const originalTERM = process.env.TERM;
+const originalCI = process.env.CI;
+const originalTERM = process.env.TERM;
+let clock;
 
-	beforeEach( () => {
-		delete process.env.CI;
-		delete process.env.TERM;
+test.beforeEach( () => {
+	delete process.env.CI;
+	delete process.env.TERM;
+
+	clock = useFakeTimers( {
+		toFake: [ 'setTimeout' ]
 	} );
+} );
 
-	afterEach( () => {
-		if ( originalCI !== undefined ) {
-			process.env.CI = originalCI;
-		}
+test.afterEach( () => {
+	if ( originalCI !== undefined ) {
+		process.env.CI = originalCI;
+	}
 
-		if ( originalTERM !== undefined ) {
-			process.env.TERM = originalTERM;
-		}
-	} );
+	if ( originalTERM !== undefined ) {
+		process.env.TERM = originalTERM;
+	}
 
-	it( 'is a function', () => {
-		expect( Spinner ).to.be.a( 'function' );
-	} );
+	clock.restore();
+} );
 
-	describe( '#constructor()', () => {
-		it( 'accepts stream as stdout option', () => {
-			const { stream: dummyStdout } = createDummyStream();
+test.serial( 'Spinner is a function', ( t ) => {
+	t.is( typeof Spinner, 'function' );
+} );
 
-			expect( () => {
-				new Spinner( {
-					stdout: 'stream'
-				} );
-			} ).to.throw( TypeError, 'Custom stdout must be a valid writable/duplex stream' );
+test.serial( '#constructor() accepts stream as stdout option', ( t ) => {
+	const { stream: dummyStdout } = createDummyStream();
+	const expectedError = {
+		instanceOf: TypeError,
+		message: 'Custom stdout must be a valid writable/duplex stream'
+	};
 
-			expect( () => {
-				new Spinner( {
-					stdout: dummyStdout
-				} );
-			} ).not.to.throw( TypeError, 'Custom stdout must be a valid writable/duplex stream' );
+	t.throws( () => {
+		new Spinner( {
+			stdout: 'stream'
 		} );
+	}, expectedError );
 
-		// #1
-		it( 'uses stderr as a default value for stdout option', () => {
-			const spinner = new Spinner();
-
-			expect( spinner.stdout ).to.equal( process.stderr );
-		} );
-
-		it( 'accepts number as interval option', () => {
-			expect( () => {
-				new Spinner( {
-					interval: false
-				} );
-			} ).to.throw( TypeError, 'Custom interval must be a valid number' );
-
-			expect( () => {
-				new Spinner( {
-					interval: 5
-				} );
-			} ).not.to.throw( TypeError, 'Custom interval must be a valid number' );
-		} );
-
-		it( 'accepts string as label option', () => {
-			expect( () => {
-				new Spinner( {
-					label: {}
-				} );
-			} ).to.throw( TypeError, 'Custom label must be a valid string' );
-
-			expect( () => {
-				new Spinner( {
-					label: 'hublabubla'
-				} );
-			} ).not.to.throw( TypeError, 'Custom label must be a valid string' );
-		} );
-
-		it( 'accepts array of strings as spinner option', () => {
-			expect( () => {
-				new Spinner( {
-					spinner: [ 1, true, 'a' ]
-				} );
-			} ).to.throw( TypeError, 'Custom spinner must be a valid array of strings' );
-
-			expect( () => {
-				new Spinner( {
-					spinner: [ 'a', 'b', 'c' ]
-				} );
-			} ).not.to.throw( TypeError, 'Custom spinner must be a valid array of strings' );
+	t.notThrows( () => {
+		new Spinner( {
+			stdout: dummyStdout
 		} );
 	} );
+} );
 
-	describe( '#show()', () => {
-		let clock;
+// #1
+test.serial( '#constructor() uses stderr as a default value for stdout option', ( t ) => {
+	const spinner = new Spinner();
 
-		beforeEach( () => {
-			clock = sinon.useFakeTimers( {
-				toFake: [ 'setTimeout' ]
-			} );
+	t.is( spinner.stdout, stderr );
+} );
+
+test.serial( '#constructor() accepts number as interval option', ( t ) => {
+	const expectedError = {
+		instanceOf: TypeError,
+		message: 'Custom interval must be a valid number'
+	};
+
+	t.throws( () => {
+		new Spinner( {
+			interval: false
 		} );
+	}, expectedError );
 
-		afterEach( () => {
-			clock.restore();
-		} );
-
-		it( 'displays correct control sequence to hide cursor', async () => {
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinner = new Spinner( {
-				stdout: dummyStdout
-			} );
-			const expectedOutput = consoleControl.hideCursor();
-
-			await spinner.show();
-
-			expect( output[ 0 ] ).to.deep.equal( expectedOutput );
-		} );
-
-		it( 'display correct frame on every tick', async () => {
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinner = new Spinner( {
-				stdout: dummyStdout
-			} );
-			const clockTick = DEFAULT_INTERVAL * 4;
-			const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
-			const framesRegexes = [
-				// First frame is written inside the promise.
-				new RegExp( `${ regexEscape( defaultSpinner[ 1 ] ) }\\s*$`, 'gi' ),
-				new RegExp( `${ regexEscape( defaultSpinner[ 2 ] ) }\\s*$`, 'gi' ),
-				new RegExp( `${ regexEscape( defaultSpinner[ 3 ] ) }\\s*$`, 'gi' ),
-				new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
-			];
-
-			await spinner.show();
-
-			output.length = 0;
-
-			await clock.tickAsync( clockTick );
-
-			expect( output ).to.have.lengthOf( expectedFramesCount );
-
-			framesRegexes.forEach( ( regex, i ) => {
-				expect( output[ i ] ).to.match( regex );
-			} );
-		} );
-
-		it( 'display custom spinner', async () => {
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinnerFrames = [
-				'Ω',
-				'Ę'
-			];
-			const spinner = new Spinner( {
-				spinner: spinnerFrames,
-				stdout: dummyStdout
-			} );
-			const clockTick = DEFAULT_INTERVAL * 2;
-			const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
-			const framesRegexes = [
-				// First frame is written inside the promise.
-				new RegExp( `${ regexEscape( spinnerFrames[ 1 ] ) }\\s*$`, 'gi' ),
-				new RegExp( `${ regexEscape( spinnerFrames[ 0 ] ) }\\s*$`, 'gi' )
-			];
-
-			await spinner.show();
-
-			output.length = 0;
-
-			await clock.tickAsync( clockTick );
-
-			expect( output ).to.have.lengthOf( expectedFramesCount );
-
-			framesRegexes.forEach( ( regex, i ) => {
-				expect( output[ i ] ).to.match( regex );
-			} );
-		} );
-
-		it( 'ticks according to passed interval', async () => {
-			const interval = 1;
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinner = new Spinner( {
-				interval: 1,
-				stdout: dummyStdout
-			} );
-			const clockTick = interval * 10;
-			// First frame and hide cursor commands are written inside the promise.
-			const expectedFramesCount = clockTick / interval + 2;
-
-			await spinner.show();
-			await clock.tickAsync( clockTick );
-
-			expect( output ).to.have.lengthOf( expectedFramesCount );
-		} );
-
-		it( 'does nothing if spinner is already shown', async () => {
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinner = new Spinner( {
-				stdout: dummyStdout
-			} );
-
-			await spinner.show();
-
-			output.length = 0;
-
-			await spinner.show();
-
-			expect( output ).to.deep.equal( [] );
+	t.notThrows( () => {
+		new Spinner( {
+			interval: 5
 		} );
 	} );
+} );
 
-	describe( '#hide()', () => {
-		let clock;
+test.serial( '#constructor() accepts string as label option', ( t ) => {
+	const expectedError = {
+		instanceOf: TypeError,
+		message: 'Custom label must be a valid string'
+	};
 
-		beforeEach( () => {
-			clock = sinon.useFakeTimers( {
-				toFake: [ 'setTimeout' ]
-			} );
+	t.throws( () => {
+		new Spinner( {
+			label: {}
 		} );
+	}, expectedError );
 
-		afterEach( () => {
-			clock.restore();
+	t.notThrows( () => {
+		new Spinner( {
+			label: 'hublabubla'
 		} );
+	} );
+} );
 
-		it( 'does nothing if spinner is not already shown', async () => {
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinner = new Spinner( {
-				stdout: dummyStdout
-			} );
+test.serial( '#constructor() accepts array of strings as spinner option', ( t ) => {
+	const expectedError = {
+		instanceOf: TypeError,
+		message: 'Custom spinner must be a valid array of strings'
+	};
 
-			await spinner.hide();
-
-			expect( output ).to.deep.equal( [] );
+	t.throws( () => {
+		new Spinner( {
+			spinner: [ 1, true, 'a' ]
 		} );
+	}, expectedError );
 
-		it( 'erases line and shows cursor', async () => {
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinner = new Spinner( {
-				stdout: dummyStdout
-			} );
-			const expectedOutput = [
-				consoleControl.gotoSOL() + consoleControl.eraseLine() + consoleControl.showCursor()
-			];
-
-			await spinner.show();
-
-			output.length = 0;
-
-			await spinner.hide();
-
-			expect( output ).to.deep.equal( expectedOutput );
+	t.notThrows( () => {
+		new Spinner( {
+			spinner: [ 'a', 'b', 'c' ]
 		} );
+	} );
+} );
 
-		it( 'is possible to reshow the spinner after hiding it', async () => {
-			const { stream: dummyStdout, output } = createDummyStream();
-			const spinner = new Spinner( {
-				stdout: dummyStdout
-			} );
-			const framesRegexes = [
-				// The first char in this command seems to be problematic…
-				new RegExp( regexEscape( consoleControl.hideCursor()[ 1 ] ), 'gi' ),
-				new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
-			];
+test.serial( '#show() displays correct control sequence to hide cursor', async ( t ) => {
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinner = new Spinner( {
+		stdout: dummyStdout
+	} );
+	const expectedOutput = consoleControl.hideCursor();
 
-			await spinner.show();
-			await spinner.hide();
+	await spinner.show();
 
-			await new Promise( ( resolve ) => {
-				process.nextTick( resolve );
-			} );
+	t.deepEqual( output[ 0 ], expectedOutput );
+} );
 
-			output.length = 0;
+test.serial( '#show() displays correct frame on every tick', async ( t ) => {
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinner = new Spinner( {
+		stdout: dummyStdout
+	} );
+	const clockTick = DEFAULT_INTERVAL * 4;
+	const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
+	const framesRegexes = [
+		// First frame is written inside the promise.
+		new RegExp( `${ regexEscape( defaultSpinner[ 1 ] ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 2 ] ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 3 ] ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
+	];
 
-			await spinner.show();
+	await spinner.show();
 
-			framesRegexes.forEach( ( regex, i ) => {
-				expect( output[ i ] ).to.match( regex );
-			} );
-		} );
+	output.length = 0;
+
+	await clock.tickAsync( clockTick );
+
+	t.is( output.length, expectedFramesCount );
+
+	framesRegexes.forEach( ( regex, i ) => {
+		t.regex( output[ i ], regex );
+	} );
+} );
+
+test.serial( '#show() displays custom spinner', async ( t ) => {
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinnerFrames = [
+		'Ω',
+		'Ę'
+	];
+	const spinner = new Spinner( {
+		spinner: spinnerFrames,
+		stdout: dummyStdout
+	} );
+	const clockTick = DEFAULT_INTERVAL * 2;
+	const expectedFramesCount = clockTick / DEFAULT_INTERVAL;
+	const framesRegexes = [
+		// First frame is written inside the promise.
+		new RegExp( `${ regexEscape( spinnerFrames[ 1 ] ) }\\s*$`, 'gi' ),
+		new RegExp( `${ regexEscape( spinnerFrames[ 0 ] ) }\\s*$`, 'gi' )
+	];
+
+	await spinner.show();
+
+	output.length = 0;
+
+	await clock.tickAsync( clockTick );
+
+	t.is( output.length, expectedFramesCount );
+
+	framesRegexes.forEach( ( regex, i ) => {
+		t.regex( output[ i ], regex );
+	} );
+} );
+
+test.serial( '#show() ticks according to passed interval', async ( t ) => {
+	const interval = 1;
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinner = new Spinner( {
+		interval: 1,
+		stdout: dummyStdout
+	} );
+	const clockTick = interval * 10;
+	// First frame and hide cursor commands are written inside the promise.
+	const expectedFramesCount = clockTick / interval + 2;
+
+	await spinner.show();
+	await clock.tickAsync( clockTick );
+
+	t.is( output.length, expectedFramesCount );
+} );
+
+test.serial( '#show() does nothing if spinner is already shown', async ( t ) => {
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinner = new Spinner( {
+		stdout: dummyStdout
+	} );
+
+	await spinner.show();
+
+	output.length = 0;
+
+	await spinner.show();
+
+	t.deepEqual( output, [] );
+} );
+
+test.serial( '#hide() does nothing if spinner is not already shown', async ( t ) => {
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinner = new Spinner( {
+		stdout: dummyStdout
+	} );
+
+	await spinner.hide();
+
+	t.deepEqual( output, [] );
+} );
+
+test.serial( '#hide() erases line and shows cursor', async ( t ) => {
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinner = new Spinner( {
+		stdout: dummyStdout
+	} );
+	const expectedOutput = [
+		consoleControl.gotoSOL() + consoleControl.eraseLine() + consoleControl.showCursor()
+	];
+
+	await spinner.show();
+
+	output.length = 0;
+
+	await spinner.hide();
+
+	t.deepEqual( output, expectedOutput );
+} );
+
+test.serial( '#hide() is possible to reshow the spinner after hiding it', async ( t ) => {
+	const { stream: dummyStdout, output } = createDummyStream();
+	const spinner = new Spinner( {
+		stdout: dummyStdout
+	} );
+	const framesRegexes = [
+		// The first char in this command seems to be problematic…
+		new RegExp( regexEscape( consoleControl.hideCursor()[ 1 ] ), 'gi' ),
+		new RegExp( `${ regexEscape( defaultSpinner[ 0 ] ) }\\s*$`, 'gi' )
+	];
+
+	await spinner.show();
+	await spinner.hide();
+
+	await new Promise( ( resolve ) => {
+		process.nextTick( resolve );
+	} );
+
+	output.length = 0;
+
+	await spinner.show();
+
+	framesRegexes.forEach( ( regex, i ) => {
+		t.regex( output[ i ], regex );
 	} );
 } );

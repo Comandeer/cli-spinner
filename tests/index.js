@@ -1,8 +1,7 @@
+import test from 'ava';
 import * as pkg from '../src/index.js';
 import Spinner from '../src/Spinner.js';
 
-describe( 'package', () => {
-	it( 'exports Spinner as default export', () => {
-		expect( pkg.default ).to.equal( Spinner );
-	} );
+test( 'package exports Spinner as default export', ( t ) => {
+	t.is( pkg.default, Spinner );
 } );
