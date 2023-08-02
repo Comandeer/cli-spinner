@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## [1.0.2] – 2023-08-02
+### Fixed
+* [#27]: `tslib` was incorrectly marked as dev dependency instead of runtime one.
+
 ## [1.0.1] – 2023-07-28
 ### Fixed
 * [#25]: incorrect order of `exports` in the `package.json` file.
@@ -68,7 +72,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [#18]: https://github.com/Comandeer/cli-spinner/issues/18
 [#20]: https://github.com/Comandeer/cli-spinner/issues/20
 [#25]: https://github.com/Comandeer/cli-spinner/issues/25
+[#27]: https://github.com/Comandeer/cli-spinner/issues/27
 
+[1.0.2]: https://github.com/Comandeer/cli-spinner/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Comandeer/cli-spinner/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Comandeer/cli-spinner/compare/v0.3.2...v1.0.0
 [0.3.2]: https://github.com/Comandeer/cli-spinner/compare/v0.3.1...v0.3.2
